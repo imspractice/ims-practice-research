@@ -189,35 +189,37 @@ except Exception as e:
 # ═══════════════════════════════════════
 print("\n📡 Agent 4 — Publishing to Hugging Face...\n")
 try:
-    hf_user = requests.get(
-        "https://huggingface.co/api/whoami",
-        headers={"Authorization": f"Bearer {HF_TOKEN}"}
-    ).json().get("name", "imspractice")
+    import base64, subprocess
+    subprocess.run(["pip", "install", "huggingface_hub", "-q"])
+    from huggingface_hub import HfApi
+    import tempfile, os as _os
 
+    api = HfApi(token=HF_TOKEN)
+    hf_user = api.whoami()["name"]
     repo_id = f"{hf_user}/ims-practice-research"
 
-    requests.post(
-        "https://huggingface.co/api/repos/create",
-        headers={"Authorization": f"Bearer {HF_TOKEN}"},
-        json={"type": "dataset", "name": "ims-practice-research", "private": False}
-    )
+    # Create repo if not exists
+    api.create_repo(repo_id=repo_id, repo_type="dataset", exist_ok=True)
 
-    import base64
+    # Write content to temp file and upload
     safe_topic = topic[:40].replace(" ","-").lower().replace("/","")
-    encoded = base64.b64encode(hf_content.encode()).decode()
+    file_path = f"docs/{safe_topic}.md"
 
-    alt = requests.post(
-        f"https://huggingface.co/api/datasets/{repo_id}/commit/main",
-        headers={"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"},
-        json={
-            "operations": [{"operation": "addOrUpdate", "path": f"docs/{safe_topic}.md", "content": encoded}],
-            "commit_message": f"Add: {topic[:50]}"
-        }
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False, encoding="utf-8") as tmp:
+        tmp.write(hf_content)
+        tmp_path = tmp.name
+
+    api.upload_file(
+        path_or_fileobj=tmp_path,
+        path_in_repo=file_path,
+        repo_id=repo_id,
+        repo_type="dataset",
+        commit_message=f"Add IMS Practice doc: {topic[:50]}"
     )
-    if alt.status_code in [200, 201]:
-        print(f"HuggingFace OK: huggingface.co/datasets/{repo_id}")
-    else:
-        print(f"HuggingFace ERROR: {alt.status_code} - {alt.text[:100]}")
+    _os.unlink(tmp_path)
+    print(f"HuggingFace OK: huggingface.co/datasets/{repo_id}")
+    print(f"File uploaded: {file_path}")
+
 except Exception as e:
     print(f"HuggingFace FAILED: {e}")
 
