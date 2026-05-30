@@ -26,4 +26,5 @@ jobs:
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python agent.py
