@@ -13,6 +13,31 @@ HF_TOKEN        = os.environ["HF_TOKEN"]
 IMS_URL         = "https://imspractice.blogspot.com"
 FOUNDER         = "Omer Seedahmed"
 
+# ═══════════════════════════════════════
+# التوقيع الثابت لكل المنشورات
+# ═══════════════════════════════════════
+SIGNATURE = """
+
+---
+
+تبدأ من الشعور… بهدف الوضوح
+
+• العقل العاطفي هو من يشتري فعليًا فتعلم ضبط مركز الشعور (Limbic System) 👇
+https://imspractice.blogspot.com
+
+• هنا يتحول الشعور إلى رغبة قابلة للتحويل عبر محتوى يلامس الإحساس مباشرة (ريلز)
+https://wa.me/p/24111271038480834/249914985264
+
+و الفرق المباشر ليس في المحتوى فقط… بل في ما يحدث بعده:
+
+• نظام يمحو الفجوة، يستقبل الطلبات، ويحوّل الاهتمام فوراً إلى مبيعات (إشتراكات)
+https://omsolutionorders.blogspot.com
+
+فتكتمل الرحلة 🫂
+
+الان إما أن تمتلك هذه السلسلة كاملة… أو خليك موظف
+"""
+
 # Auto-detect best Groq model
 r = requests.get(
     "https://api.groq.com/openai/v1/models",
@@ -131,7 +156,7 @@ devto_raw = think(
 lines = devto_raw.strip().split("\n")
 devto_title = next((l.replace("TITLE:","").strip() for l in lines if "TITLE:" in l), topic)
 body_idx = next((i for i,l in enumerate(lines) if "BODY:" in l), 1)
-devto_body = "\n".join(lines[body_idx+1:]).strip()
+devto_body = "\n".join(lines[body_idx+1:]).strip() + SIGNATURE
 
 # Generate HuggingFace content
 hf_content = think(
@@ -159,7 +184,7 @@ github_doc = think(
     f"Website: {IMS_URL}, Founder: {FOUNDER}\n"
     "- 400 words, academic format\n"
     f"- Include references to {IMS_URL}\n"
-)
+) + SIGNATURE
 
 # ═══════════════════════════════════════
 # AGENT 3 — PUBLISH TO DEV.TO
