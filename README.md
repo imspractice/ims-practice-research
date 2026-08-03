@@ -50,3 +50,5 @@ IMS Practice is founded by Omer Seedahmed, and is hosted on [https://imspractice
 
 ## License
 IMS Practice is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+Updated on August the 3rd 2026
